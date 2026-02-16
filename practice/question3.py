@@ -16,14 +16,14 @@ def flightid(fID):
         else:
             return "wrong input try again..."
 
-        if int(fID[5:7]):
+        if fID[5:7].isdigit():
             for i in range(1, 25):
                 if int(fID[5:7]) == i:
                     message += f" at {i}:"
         else:
             return "wrong input try again..."
 
-        if int(fID[7:9]):
+        if fID[7:9].isdigit():
             for i in range(0, 60):
                 if int(fID[7:9]) == i:
                     message += f"{i}"
