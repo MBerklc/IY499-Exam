@@ -1,5 +1,4 @@
-def flightID(fID):
-
+def flightid(fID):
     if len(fID) == 10:
         if fID[:2] == "SA":
             message = "ScotAir"
@@ -40,6 +39,4 @@ def flightID(fID):
 
 
 a = input("Enter the FlightID: ")
-print(flightID(a))
-
-
+print(flightid(a))
