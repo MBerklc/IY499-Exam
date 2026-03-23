@@ -35,8 +35,27 @@ def read_data():
     return df
 
 #Compute mean, median, mode, modal class, variance, standard deviation using statistics
-def compute_statistics(data, grouped_df, frequency, midpoint):
-    print("Display all statistics")
+def compute_statistics(data):
+    ages = np.array(data["Age"])
+    print("---Statistics---")
+
+    grouped_df = pd.cut(
+        data["Age"],
+        bins=[0, 10, 20, 30, 40, 50, 60],
+        labels=["0-10", "10-20", "20-30", "30-40", "40-50", "50-60"],
+        include_lowest=True
+    )
+
+    frequency = grouped_df.value_counts().sort_index()
+    midpoint = [5, 15.5, 25.5, 35.5, 45.5, 55.5]
+
+    print("\n---Grouped Data---")
+    print(frequency)
+
+    print("\nMidpoints:")
+    print(midpoint)
+
+    print("Statistic displayed")
 
 #Draw a histogram from grouped data using matplotlib
 def draw_histogram(grouped_df):
@@ -71,8 +90,8 @@ def main():
                 print(line)
             # -----------------------------------------------------------
             case "2":
-                read_data()
-                compute_statistics("data", "grouped_df", "frequency", "midpoint")
+                df = read_data()
+                compute_statistics(df)
                 print(line)
             # -----------------------------------------------------------
             case "3":
