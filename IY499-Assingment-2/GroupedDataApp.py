@@ -28,34 +28,42 @@ def get_user_data():
 #Read numerical data from csv file using pandas
 def read_data():
     df = pd.read_csv("sampleData-1.csv")
-    print("\n**** Data from CSV file  ****\n")
-    print(df)
-    print(df.describe())
-    print("Data was loaded")
+    print("\n**** Data from CSV file ****\n")
+
+    ages = df["Age"].tolist()
+    for i in range(0, len(ages), 5):
+        print(*ages[i:i+5])   # 5 numbers per line
+
+    print("\nData was loaded")
     return df
 
 #Compute mean, median, mode, modal class, variance, standard deviation using statistics
 def compute_statistics(data):
-    ages = np.array(data["Age"])
+    ages = list(data["Age"])
+
     print("---Statistics---")
+    print("Mean:", statistics.mean(ages))
+    print("Median:", statistics.median(ages))
 
-    grouped_df = pd.cut(
-        data["Age"],
-        bins=[0, 10, 20, 30, 40, 50, 60],
-        labels=["0-10", "10-20", "20-30", "30-40", "40-50", "50-60"],
-        include_lowest=True
-    )
+    try:
+        print("Mode:", statistics.mode(ages))
+    except:
+        print("Mode: No unique mode")
 
-    frequency = grouped_df.value_counts().sort_index()
-    midpoint = [5, 15.5, 25.5, 35.5, 45.5, 55.5]
+    print("Variance:", statistics.variance(ages))
+    print("Std Dev:", statistics.stdev(ages))
+
+    # Grouping
+    bins = [0, 10, 20, 30, 40, 50, 60]
+    grouped = pd.cut(data["Age"], bins=bins)
+
+    freq = grouped.value_counts().sort_index()
 
     print("\n---Grouped Data---")
-    print(frequency)
+    print(freq)
 
-    print("\nMidpoints:")
-    print(midpoint)
-
-    print("Statistic displayed")
+    print("Midpoints:", [(bins[i] + bins[i + 1]) / 2 for i in range(len(bins) - 1)])
+    print("Modal Class:", freq.idxmax())
 
 #Draw a histogram from grouped data using matplotlib
 def draw_histogram(grouped_df):
