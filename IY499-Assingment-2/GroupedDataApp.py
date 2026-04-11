@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import  statistics
+import os
 
 #Get data and save into csv file using pandas
 def get_user_data():
@@ -16,11 +17,12 @@ def get_user_data():
             age = int(input("Enter age: "))
             if age == 0:
                 isEnough = True
-            elif age < 0 or age > 150:
-                print("Number should be between 0 to 150. For exiting 0")
+            elif age < 0 or age > 125:
+                print("Number should be between 0 to 125. For exiting 0")
             else:
                 df = pd.DataFrame([[age]], columns=["Age"])
-                df.to_csv("sampleData-1.csv", mode='a', header=False, index=False)
+                header = not os.path.exists("sampleData-1.csv") #Write header only on first save
+                df.to_csv("sampleData-1.csv", mode='a', header=header, index=False)
                 print("Data Saved")
         except ValueError:
             print("Wrong input enter a number")
@@ -37,6 +39,17 @@ def read_data():
     print("\nData was loaded")
     return df
 
+#Ask user to specify class width for grouping
+def get_bin_width():
+    while True:
+        try:
+            width = int(input("Enter class width (e.g. 10): "))
+            if width > 0:
+                return width
+            print("Width must be positive")
+        except ValueError:
+            print("Wrong input enter a number")
+
 #Compute mean, median, mode, modal class, variance, standard deviation using statistics
 def compute_statistics(data):
     ages = list(data["Age"])
@@ -47,29 +60,44 @@ def compute_statistics(data):
 
     try:
         print("Mode:", statistics.mode(ages))
-    except:
+    except statistics.StatisticsError:
         print("Mode: No unique mode")
 
-    print("Variance:", statistics.variance(ages))
-    print("Std Dev:", statistics.stdev(ages))
+    # Using numpy get variance and std dev
+    print("Variance:", np.var(ages))
+    print("Std Dev:", np.std(ages))
 
-    # Grouping
-    bins = [0, 10, 20, 30, 40, 50, 60]
-    grouped = pd.cut(data["Age"], bins=bins)
+    # Build bins based on user width and data range
+    width = get_bin_width()
+    start = (min(ages) // width) * width
+    stop = ((max(ages) // width) + 2) * width
+    bins = list(range(start, stop, width))
 
+    grouped = pd.cut(data["Age"], bins=bins, right=False)
     freq = grouped.value_counts().sort_index()
 
-    print("\n---Grouped Data---")
-    print(freq)
+    # Build frequency table with midpoint and cumulative frequency
+    rows = []
+    cumulative = 0
+    for interval, count in freq.items():
+        midpoint = (interval.left + interval.right) / 2
+        cumulative += count
+        rows.append({"Class": str(interval), "Midpoint": midpoint, "Frequency": count, "Cumulative": cumulative})
 
-    print("Midpoints:", [(bins[i] + bins[i + 1]) / 2 for i in range(len(bins) - 1)])
+    table_df = pd.DataFrame(rows)
+    print("\n---Grouped Data---")
+    print(table_df.to_string(index=False))
     print("Modal Class:", freq.idxmax())
 
+    table_df.to_csv("results.csv", index=False)
+    print("Results saved to results.csv")
+
 #Draw a histogram from grouped data using matplotlib
-def draw_histogram(grouped_df):
-    plt.hist(grouped_df)
-    plt.xlabel("Marks")
+def draw_histogram(grouped_df, bins):
+    plt.hist(grouped_df, bins=bins, edgecolor='black')
+    plt.xlabel("Age")
     plt.ylabel("Frequency")
+    plt.xticks(bins) #Label each bin edge on x-axis
     plt.show()
 
 
@@ -88,6 +116,7 @@ def main():
         choice = input("Enter your choice: ")
         print(line)
 
+        # Handle user menu choice
         match choice:
             case "0":
                 print(f"Exiting...{line}")
@@ -104,7 +133,12 @@ def main():
             # -----------------------------------------------------------
             case "3":
                 df = read_data()
-                draw_histogram(df["Age"])
+                width = get_bin_width()
+                ages = list(df["Age"])
+                start = (min(ages) // width) * width
+                stop = ((max(ages) // width) + 2) * width
+                bins = list(range(start, stop, width))
+                draw_histogram(df["Age"], bins)
                 print(line)
             # -----------------------------------------------------------
 
