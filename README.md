@@ -1,5 +1,7 @@
 Programmer: Muhammed Berk Kilic
 P-number: P296144
+Course code: IY499
+GitHub: https://github.com/MBerklc/IY499-Exam
 
 Declaration: This is my own work.
 
@@ -17,8 +19,8 @@ pip install pandas numpy matplotlib
 (statistics and os are built into Python, no installation needed)
 
 Usage:
-Run the program with: python grouped_data_analysis.py
-1. Add and save data   - enter age values one by one
+Run the program with: python GroupedDataApp.py
+1. Add and save data   - enter age values one at a time
 2. Show statistics     - shows mean, median, mode, variance, std dev and frequency table
 3. Draw histogram      - shows histogram of the data
 0. Exit                - exits the program
